@@ -8,6 +8,7 @@ import { DosageCard } from "../components/dosage/DosageCard";
 import { RecipeCard } from "../components/recipe/RecipeCard";
 import { useStore } from "../lib/store";
 import { streamAgentRun } from "../lib/agentStream";
+import { normalizeDose, normalizeRecipe } from "../lib/utils";
 import type { TraceEvent } from "../types/agent";
 
 export function PetAnalyze() {
@@ -31,6 +32,11 @@ export function PetAnalyze() {
   const isRunning = activeRun.status === "running";
   const isComplete = activeRun.status === "complete";
   const result = activeRun.result;
+
+  // Normalize backend field names → frontend types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const normalizedDoses = (result?.dosage_data ?? []).map((d: any) => normalizeDose(d));
+  const normalizedRecipe = result?.recipe_data ? normalizeRecipe(result.recipe_data) : null;
 
   const handleRun = async () => {
     const token = await getToken();
@@ -107,23 +113,23 @@ export function PetAnalyze() {
             </div>
           )}
 
-          {/* Dosage */}
-          {result.dosage_data?.length > 0 && (
+          {/* Dosage — normalized from backend field names */}
+          {normalizedDoses.length > 0 && (
             <div>
               <h2 className="text-base font-semibold text-gray-800 mb-3">Dosage Panel</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {result.dosage_data.map((dose) => (
+                {normalizedDoses.map((dose) => (
                   <DosageCard key={dose.drug} dose={dose} />
                 ))}
               </div>
             </div>
           )}
 
-          {/* Recipe */}
-          {result.recipe_data && (
+          {/* Recipe — normalized from backend field names */}
+          {normalizedRecipe && (
             <div>
               <h2 className="text-base font-semibold text-gray-800 mb-3">Prescription Recipe</h2>
-              <RecipeCard recipe={result.recipe_data} />
+              <RecipeCard recipe={normalizedRecipe} />
             </div>
           )}
         </div>
