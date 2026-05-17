@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import { AppShell } from "./components/layout/AppShell";
 import { Landing } from "./routes/Landing";
+import { HowItWorks } from "./routes/HowItWorks";
 import { SignIn } from "./routes/SignIn";
 import { SignUp } from "./routes/SignUp";
 import { Dashboard } from "./routes/Dashboard";
@@ -29,6 +30,7 @@ export default function App() {
     <Routes>
       {/* Public */}
       <Route path="/" element={<Landing />} />
+      <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/sign-in/*" element={<SignIn />} />
       <Route path="/sign-up/*" element={<SignUp />} />
 

@@ -38,6 +38,9 @@ export function Landing() {
           <span className="font-bold text-lg">VetOnco</span>
         </div>
         <div className="flex items-center gap-3">
+          <Link to="/how-it-works">
+            <Button variant="ghost" size="sm">How it works</Button>
+          </Link>
           <SignedOut>
             <Link to="/sign-in">
               <Button variant="ghost" size="sm">Sign in</Button>
@@ -82,6 +85,9 @@ export function Landing() {
               <Button size="lg">Go to dashboard</Button>
             </Link>
           </SignedIn>
+          <Link to="/how-it-works">
+            <Button size="lg" variant="ghost">See the science →</Button>
+          </Link>
         </div>
       </div>
 
@@ -97,6 +103,13 @@ export function Landing() {
               <p className="text-sm text-gray-400 leading-relaxed">{desc}</p>
             </div>
           ))}
+        </div>
+
+        {/* Footer link */}
+        <div className="mt-12 text-center">
+          <Link to="/how-it-works" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+            How does VetOnco work? Read the science, training sources, and algorithm transparency report →
+          </Link>
         </div>
       </div>
     </div>

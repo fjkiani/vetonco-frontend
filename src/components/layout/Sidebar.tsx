@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { UserButton } from "@clerk/clerk-react";
 import {
   LayoutDashboard,
@@ -9,6 +9,7 @@ import {
   BookOpen,
   ChevronRight,
   Activity,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useStore } from "../../lib/store";
@@ -103,10 +104,23 @@ export function Sidebar() {
         {petId && <PetNav petId={petId} />}
       </nav>
 
-      {/* User */}
-      <div className="px-4 py-4 border-t border-gray-700 flex items-center gap-3">
-        <UserButton afterSignOutUrl="/" />
-        <span className="text-gray-400 text-xs">Account</span>
+      {/* Footer */}
+      <div className="border-t border-gray-700">
+        {/* How it works link */}
+        <div className="px-3 py-2">
+          <Link
+            to="/how-it-works"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+          >
+            <HelpCircle className="h-4 w-4 flex-shrink-0" />
+            How it works
+          </Link>
+        </div>
+        {/* User */}
+        <div className="px-4 py-4 border-t border-gray-700 flex items-center gap-3">
+          <UserButton afterSignOutUrl="/" />
+          <span className="text-gray-400 text-xs">Account</span>
+        </div>
       </div>
     </aside>
   );
