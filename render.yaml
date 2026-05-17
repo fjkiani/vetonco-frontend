@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vetonco-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: VITE_API_URL
+        value: https://vetonco-backend.onrender.com
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        value: pk_test_c2F2ZWQtdW5pY29ybi04MC5jbGVyay5hY2NvdW50cy5kZXYk
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
