@@ -1,4 +1,4 @@
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { UserButton } from "@clerk/clerk-react";
 import {
   LayoutDashboard,
@@ -19,7 +19,7 @@ const topNav = [
 
 function PetNav({ petId }: { petId: string }) {
   const pet = useStore((s) => s.getPet(petId));
-  const name = pet?.name ?? "Pet";
+  const name = pet?.name ?? "Patient";
 
   const links = [
     { to: `/pets/${petId}`, icon: Dog, label: "Overview", end: true },
@@ -33,8 +33,8 @@ function PetNav({ petId }: { petId: string }) {
   return (
     <div className="mt-4">
       <div className="px-3 mb-1 flex items-center gap-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-        <ChevronRight className="h-3 w-3" />
-        {name}
+        <ChevronRight className="h-3 w-3 flex-shrink-0" />
+        <span className="truncate">{name}</span>
       </div>
       {links.map(({ to, icon: Icon, label, end }) => (
         <NavLink
@@ -59,14 +59,17 @@ function PetNav({ petId }: { petId: string }) {
 }
 
 export function Sidebar() {
-  const { id: petId } = useParams<{ id: string }>();
+  // Parse pet ID from URL path — works without useParams (no route context needed)
+  const { pathname } = useLocation();
+  const petMatch = pathname.match(/^\/pets\/([^/]+)/);
+  const petId = petMatch ? petMatch[1] : null;
 
   return (
-    <aside className="flex flex-col w-56 bg-gray-900 min-h-screen">
+    <aside className="flex flex-col w-56 bg-gray-900 min-h-screen flex-shrink-0">
       {/* Logo */}
       <div className="px-4 py-5 border-b border-gray-700">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
             <Dog className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -77,7 +80,7 @@ export function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-4 space-y-1">
+      <nav className="flex-1 py-4 space-y-1 overflow-y-auto">
         {topNav.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
