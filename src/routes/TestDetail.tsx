@@ -9,16 +9,19 @@ import { MonitoringPanel } from "../components/agent/MonitoringPanel";
 import { useStore } from "../lib/store";
 import { api } from "../lib/api";
 import { formatDate } from "../lib/utils";
-import type { MonitoringResult } from "../types/agent";
-import type { MonitoringAlert, TraceEvent } from "../types/agent";
+import type { MonitoringResult, MonitoringAlert, TraceEvent } from "../types/agent";
 
 export function TestDetail() {
   const { id, testId } = useParams<{ id: string; testId: string }>();
   const { getToken } = useAuth();
-  const pet = useStore((s) => s.getPet(id!));
-  const sessions = useStore((s) => s.getTestHistory(id!));
+
+  // Select raw state — never call functions inside selectors
+  const pets = useStore((s) => s.pets);
+  const testHistory = useStore((s) => s.testHistory);
   const setAlerts = useStore((s) => s.setAlerts);
 
+  const pet = pets.find((p) => p.id === id);
+  const sessions = testHistory[id!] ?? [];
   const session = sessions.find((s) => s.session_id === testId);
 
   const [monitoringResult, setMonitoringResult] = useState<MonitoringResult | null>(null);
@@ -29,7 +32,9 @@ export function TestDetail() {
     return (
       <div className="text-center py-16">
         <p className="text-gray-500">Test session not found.</p>
-        <Link to={`/pets/${id}/tests`} className="text-blue-500 text-sm mt-2 inline-block">Back to history</Link>
+        <Link to={`/pets/${id}/tests`} className="text-blue-500 text-sm mt-2 inline-block">
+          Back to history
+        </Link>
       </div>
     );
   }
@@ -68,7 +73,10 @@ export function TestDetail() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Back */}
-      <Link to={`/pets/${id}/tests`} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link
+        to={`/pets/${id}/tests`}
+        className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to history
       </Link>
 
@@ -79,7 +87,9 @@ export function TestDetail() {
             <Badge variant="outline">{session.test_type}</Badge>
             <span className="text-sm text-gray-500">{formatDate(session.date)}</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{pet.name} — {session.test_type}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {pet.name} — {session.test_type}
+          </h1>
         </div>
         <Button
           icon={<Activity className="h-4 w-4" />}
@@ -115,7 +125,9 @@ export function TestDetail() {
 
       {/* Monitoring agent */}
       {monitoringError && (
-        <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">{monitoringError}</div>
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+          {monitoringError}
+        </div>
       )}
 
       {(monitoringResult || monitoringLoading) && (

@@ -13,8 +13,18 @@ import type { TraceEvent } from "../types/agent";
 export function PetAnalyze() {
   const { id } = useParams<{ id: string }>();
   const { getToken } = useAuth();
-  const pet = useStore((s) => s.getPet(id!));
-  const { activeRun, startRun, setRunningNode, appendTrace, completeRun, failRun, resetRun } = useStore();
+
+  // Select raw state — never call functions inside selectors (causes infinite re-render)
+  const pets = useStore((s) => s.pets);
+  const activeRun = useStore((s) => s.activeRun);
+  const startRun = useStore((s) => s.startRun);
+  const setRunningNode = useStore((s) => s.setRunningNode);
+  const appendTrace = useStore((s) => s.appendTrace);
+  const completeRun = useStore((s) => s.completeRun);
+  const failRun = useStore((s) => s.failRun);
+  const resetRun = useStore((s) => s.resetRun);
+
+  const pet = pets.find((p) => p.id === id);
 
   if (!pet) return <div className="text-gray-500">Patient not found.</div>;
 

@@ -9,10 +9,16 @@ import { BRAF_STATUS_LABELS } from "../types/pet";
 export function PetOverview() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const pet = useStore((s) => s.getPet(id!));
+
+  // Select primitives/stable references — never call functions inside selectors
+  const pets = useStore((s) => s.pets);
+  const allAlerts = useStore((s) => s.alerts);
+  const testHistory = useStore((s) => s.testHistory);
   const removePet = useStore((s) => s.removePet);
-  const alerts = useStore((s) => s.alerts);
-  const testHistory = useStore((s) => s.getTestHistory(id!));
+
+  const pet = pets.find((p) => p.id === id);
+  const sessions = testHistory[id!] ?? [];
+  const petAlerts = allAlerts.filter((a) => a.severity === "CRITICAL" || a.severity === "HIGH");
 
   if (!pet) {
     return (
@@ -23,8 +29,6 @@ export function PetOverview() {
     );
   }
 
-  const petAlerts = alerts.filter((a) => a.severity === "CRITICAL" || a.severity === "HIGH");
-
   const quickLinks = [
     { to: `/pets/${id}/analyze`, icon: Activity, label: "Run Agent Analysis", color: "text-blue-600 bg-blue-50" },
     { to: `/pets/${id}/compounds`, icon: FlaskConical, label: "View Compounds", color: "text-purple-600 bg-purple-50" },
@@ -34,7 +38,7 @@ export function PetOverview() {
   ];
 
   const handleDelete = () => {
-    if (confirm(`Delete ${pet.name}? This cannot be undone.`)) {
+    if (window.confirm(`Delete ${pet.name}? This cannot be undone.`)) {
       removePet(pet.id);
       navigate("/dashboard");
     }
@@ -49,17 +53,24 @@ export function PetOverview() {
             <Dog className="h-8 w-8 text-blue-500" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold text-gray-900">{pet.name}</h1>
               {pet.braf_status === "positive" && <Badge variant="warning">BRAF+</Badge>}
               {pet.braf_status === "negative" && <Badge variant="info">BRAF-</Badge>}
               {pet.braf_status === "unknown" && <Badge variant="muted">BRAF unknown</Badge>}
               {pet.msh2_loss && <Badge variant="danger">MSH2 loss</Badge>}
             </div>
-            <p className="text-gray-500">{pet.breed} · {pet.weight_kg} kg{pet.age_years ? ` · ${pet.age_years}y` : ""}</p>
+            <p className="text-gray-500">
+              {pet.breed} · {pet.weight_kg} kg{pet.age_years ? ` · ${pet.age_years}y` : ""}
+            </p>
           </div>
         </div>
-        <Button variant="ghost" size="sm" icon={<Trash2 className="h-4 w-4 text-red-400" />} onClick={handleDelete}>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<Trash2 className="h-4 w-4 text-red-400" />}
+          onClick={handleDelete}
+        >
           Delete
         </Button>
       </div>
@@ -110,7 +121,7 @@ export function PetOverview() {
             )}
             <div>
               <p className="text-xs text-gray-400">Test Sessions</p>
-              <p className="text-sm font-medium text-gray-800">{testHistory.length}</p>
+              <p className="text-sm font-medium text-gray-800">{sessions.length}</p>
             </div>
           </div>
         </CardBody>

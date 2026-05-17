@@ -15,7 +15,8 @@ export function TestNew() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getToken } = useAuth();
-  const pet = useStore((s) => s.getPet(id!));
+  const pets = useStore((s) => s.pets);
+  const pet = pets.find((p) => p.id === id);
   const addTestSession = useStore((s) => s.addTestSession);
 
   const [testType, setTestType] = useState("CBC");

@@ -18,7 +18,9 @@ const topNav = [
 ];
 
 function PetNav({ petId }: { petId: string }) {
-  const pet = useStore((s) => s.getPet(petId));
+  // Select raw pets array — never call getPet() inside a selector
+  const pets = useStore((s) => s.pets);
+  const pet = pets.find((p) => p.id === petId);
   const name = pet?.name ?? "Patient";
 
   const links = [
@@ -59,7 +61,6 @@ function PetNav({ petId }: { petId: string }) {
 }
 
 export function Sidebar() {
-  // Parse pet ID from URL path — works without useParams (no route context needed)
   const { pathname } = useLocation();
   const petMatch = pathname.match(/^\/pets\/([^/]+)/);
   const petId = petMatch ? petMatch[1] : null;

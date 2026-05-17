@@ -8,6 +8,7 @@ import { useStore } from "../lib/store";
 
 export function Dashboard() {
   const { user } = useUser();
+  // Select raw arrays — never call functions inside selectors
   const pets = useStore((s) => s.pets);
   const alerts = useStore((s) => s.alerts);
 
@@ -33,7 +34,9 @@ export function Dashboard() {
         <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="h-5 w-5 text-red-500" />
-            <span className="font-semibold text-red-800">{criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? "s" : ""}</span>
+            <span className="font-semibold text-red-800">
+              {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? "s" : ""}
+            </span>
           </div>
           {criticalAlerts.slice(0, 3).map((a, i) => (
             <p key={i} className="text-sm text-red-700">• {a.message}</p>
@@ -86,14 +89,14 @@ export function Dashboard() {
                       <Dog className="h-6 w-6 text-blue-500" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-gray-900">{pet.name}</h3>
                         {pet.braf_status === "positive" && <Badge variant="warning">BRAF+</Badge>}
                         {pet.braf_status === "negative" && <Badge variant="info">BRAF-</Badge>}
                       </div>
                       <p className="text-sm text-gray-500">{pet.breed} · {pet.weight_kg} kg</p>
                     </div>
-                    <Activity className="h-4 w-4 text-gray-400" />
+                    <Activity className="h-4 w-4 text-gray-400 flex-shrink-0" />
                   </CardBody>
                 </Card>
               </Link>

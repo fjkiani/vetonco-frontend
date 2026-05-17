@@ -9,8 +9,13 @@ import { formatDate } from "../lib/utils";
 
 export function TestHistory() {
   const { id } = useParams<{ id: string }>();
-  const pet = useStore((s) => s.getPet(id!));
-  const sessions = useStore((s) => s.getTestHistory(id!));
+
+  // Select raw state — never call functions inside selectors
+  const pets = useStore((s) => s.pets);
+  const testHistory = useStore((s) => s.testHistory);
+
+  const pet = pets.find((p) => p.id === id);
+  const sessions = testHistory[id!] ?? [];
 
   if (!pet) return <div className="text-gray-500">Patient not found.</div>;
 
@@ -30,7 +35,9 @@ export function TestHistory() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Test History</h1>
-          <p className="text-gray-500 mt-1">{pet.name} · {sessions.length} session{sessions.length !== 1 ? "s" : ""}</p>
+          <p className="text-gray-500 mt-1">
+            {pet.name} · {sessions.length} session{sessions.length !== 1 ? "s" : ""}
+          </p>
         </div>
         <Link to={`/pets/${id}/tests/new`}>
           <Button icon={<Plus className="h-4 w-4" />}>Log Test</Button>
@@ -80,7 +87,9 @@ export function TestHistory() {
                     <div className="flex items-center gap-2">
                       {session.analysis && <GradeIndicator grade={maxGrade} showDesc />}
                       {alertCount > 0 && (
-                        <Badge variant="warning">{alertCount} alert{alertCount > 1 ? "s" : ""}</Badge>
+                        <Badge variant="warning">
+                          {alertCount} alert{alertCount > 1 ? "s" : ""}
+                        </Badge>
                       )}
                     </div>
                   </div>

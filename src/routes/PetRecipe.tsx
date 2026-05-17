@@ -11,7 +11,8 @@ import type { RecipeCard as RecipeCardType } from "../types/api";
 export function PetRecipe() {
   const { id } = useParams<{ id: string }>();
   const { getToken } = useAuth();
-  const pet = useStore((s) => s.getPet(id!));
+  const pets = useStore((s) => s.pets);
+  const pet = pets.find((p) => p.id === id);
   const [recipe, setRecipe] = useState<RecipeCardType | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

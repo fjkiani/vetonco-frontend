@@ -11,7 +11,8 @@ import type { CompoundData } from "../types/api";
 export function PetCompounds() {
   const { id } = useParams<{ id: string }>();
   const { getToken } = useAuth();
-  const pet = useStore((s) => s.getPet(id!));
+  const pets = useStore((s) => s.pets);
+  const pet = pets.find((p) => p.id === id);
   const [compounds, setCompounds] = useState<CompoundData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
